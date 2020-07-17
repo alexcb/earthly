@@ -3,7 +3,7 @@ WORKDIR /dotnet-example
 
 build:
     COPY src src
-    RUN dotnet publish src/HelloEarthly -o publish
+    RUN dotnet publish src/HelloEarthly -o publish && find /tmp -type s | xargs rm
     SAVE ARTIFACT publish AS LOCAL publish
 
 docker:
