@@ -33,5 +33,5 @@ jobs:
     - name: md5
       run: md5sum /tmp/sshkey
     - name: Test on macOS
-      run: echo 'sudo -u alex sh -c "PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin brew upgrade earthly && earth -P github.com/earthly/earthly+test-all"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
+      run: echo 'sudo -u alex sh -c "export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin && brew upgrade earthly && earth -P github.com/earthly/earthly+test-all"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
 
