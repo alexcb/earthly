@@ -29,5 +29,5 @@ jobs:
     - name: Send greeting
       env:
         SSH_KEY: ${{ secrets.MAC_CORP_SSH_PRIVATE_KEY }}
-      run: echo "Hello $SSH_KEY"
+      run: echo "Hello the key is _ $SSH_KEY _"
 
