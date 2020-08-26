@@ -29,11 +29,9 @@ jobs:
     - name: Setup SSH key
       env:
         SSH_KEY: ${{ secrets.MAC_CORP_SSH_PRIVATE_KEY }}
-      run: echo $SSH_KEY > /tmp/sshkey && chmod 400 /tmp/sshkey
+      run: echo "$SSH_KEY" > /tmp/sshkey && chmod 400 /tmp/sshkey
     - name: md5
       run: md5sum /tmp/sshkey
-    - name: md5
-      run: cat /tmp/sshkey | base64
     - name: Test on macOS
       run: ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475 hostname -f
 
