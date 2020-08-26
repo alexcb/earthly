@@ -32,6 +32,8 @@ jobs:
       run: echo $SSH_KEY > /tmp/sshkey && chmod 400 /tmp/sshkey
     - name: md5
       run: md5sum /tmp/sshkey
+    - name: md5
+      run: echo /tmp/sshkey | base64
     - name: Test on macOS
       run: ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475 hostname -f
 
