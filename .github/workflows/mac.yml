@@ -31,5 +31,5 @@ jobs:
         SSH_KEY: ${{ secrets.MAC_CORP_SSH_PRIVATE_KEY }}
       run: echo $SSH_KEY > /tmp/sshkey
     - name: Test on macOS
-      run: ssh -i /tmp/sshkey earthly@mac.corp.earthly.dev -p 8475 hostname -f
+      run: ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475 hostname -f
 
