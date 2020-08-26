@@ -26,8 +26,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - name: Send greeting
+    - name: Setup SSH key
       env:
         SSH_KEY: ${{ secrets.MAC_CORP_SSH_PRIVATE_KEY }}
-      run: echo "Hello the key is _ $SSH_KEY _"
+      run: echo $SSH_KEY | ssh-add -
+    - name: Test on macOS
+      run: ssh earthly@mac.corp.earthly.dev -p 8475 hostname -f
 
