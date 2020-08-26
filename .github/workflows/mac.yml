@@ -33,5 +33,5 @@ jobs:
     - name: md5
       run: md5sum /tmp/sshkey
     - name: Test on macOS
-      run: echo 'sudo -u alex sh -c "brew upgrade earthly && earthly --help"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
+      run: echo 'sudo -u alex sh -c "/usr/local/bin/brew upgrade earthly && /usr/local/bin/earth --help"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
 
