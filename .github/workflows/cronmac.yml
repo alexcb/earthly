@@ -1,26 +1,26 @@
-name: scheduled test on macOS
-
-on:
-  schedule:
-    - cron:  '*/30 * * * *'
-  workflow_dispatch:
-
-jobs:
-  macOS:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Setup SSH key
-      env:
-        SSH_KEY: ${{ secrets.MAC_CORP_SSH_PRIVATE_KEY }}
-      run: echo "$SSH_KEY" > /tmp/sshkey && chmod 400 /tmp/sshkey
-    - name: test examples/go+docker on macOS
-      run: >
-        echo 'sudo -u alex sh -c "export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin && export GIT_URL_INSTEAD_OF=https://github.com/=git@github.com: && export FORCE_COLOR=1 && brew upgrade earthly && earth github.com/earthly/earthly/examples/go+docker"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
-    - name: Report on slack
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
-      if: always()
+#name: scheduled test on macOS
+#
+#on:
+#  schedule:
+#    - cron:  '*/30 * * * *'
+#  workflow_dispatch:
+#
+#jobs:
+#  macOS:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - name: Setup SSH key
+#      env:
+#        SSH_KEY: ${{ secrets.MAC_CORP_SSH_PRIVATE_KEY }}
+#      run: echo "$SSH_KEY" > /tmp/sshkey && chmod 400 /tmp/sshkey
+#    - name: test examples/go+docker on macOS
+#      run: >
+#        echo 'sudo -u alex sh -c "export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin && export GIT_URL_INSTEAD_OF=https://github.com/=git@github.com: && export FORCE_COLOR=1 && brew upgrade earthly && earth github.com/earthly/earthly/examples/go+docker"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
+#    - name: Report on slack
+#      uses: 8398a7/action-slack@v3
+#      with:
+#        status: ${{ job.status }}
+#        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took # selectable (default: repo,message)
+#      env:
+#        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+#      if: always()
