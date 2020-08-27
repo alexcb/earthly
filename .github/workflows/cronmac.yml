@@ -1,4 +1,4 @@
-name: Test on macOS
+name: scheduled test on macOS
 
 on:
   schedule:
