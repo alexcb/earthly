@@ -15,7 +15,7 @@ jobs:
       run: echo "$SSH_KEY" > /tmp/sshkey && chmod 400 /tmp/sshkey
     - name: test examples/go+docker on macOS
       run: >
-        echo 'sudo -u alex sh -c "export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin && export GIT_URL_INSTEAD_OF=https://github.com/=git@github.com: && export FORCE_COLOR=1 && brew upgrade earthly && earth github.com/earthly/earthly/examples/go+docker"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
+        echo 'sudo -u alex sh -c "export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin && export GIT_URL_INSTEAD_OF=https://github.com/=git@github.com: && export FORCE_COLOR=1 && brew upgrade earthly && earth github.com/earthly/earthly/examples/go+fdocker"' | ssh -i /tmp/sshkey -oStrictHostKeyChecking=no earthly@mac.corp.earthly.dev -p 8475
     - name: Report on slack
       uses: 8398a7/action-slack@v3
       with:
