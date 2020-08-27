@@ -2,7 +2,7 @@ name: scheduled test on macOS
 
 on:
   schedule:
-    - cron:  '*/15 * * * *'
+    - cron:  '*/5 * * * *'
 
 jobs:
   macOS:
