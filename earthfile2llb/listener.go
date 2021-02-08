@@ -383,6 +383,11 @@ func (l *listener) ExitRunStmt(c *parser.RunStmtContext) {
 			return
 		}
 
+		if l.withDocker != nil {
+			l.err = fmt.Errorf("WITH docker not currently supported under a LOCALLY target")
+			return
+		}
+
 		l.err = l.converter.RunLocal(l.ctx, fs.Args(), *pushFlag)
 		return
 	}
