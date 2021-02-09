@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 	"strconv"
 
 	"github.com/earthly/earthly/domain"
@@ -205,6 +207,7 @@ func (s *solver) newSolveOptMulti(ctx context.Context, eg *errgroup.Group, onIma
 				Type:  client.ExporterEarthly,
 				Attrs: map[string]string{},
 				Output: func(md map[string]string) (io.WriteCloser, error) {
+					fmt.Printf("solver called my output callback with %v from %s\n", md, debug.Stack())
 					if md["export-image"] != "true" {
 						return nil, nil
 					}
@@ -212,6 +215,7 @@ func (s *solver) newSolveOptMulti(ctx context.Context, eg *errgroup.Group, onIma
 					return onImage(ctx, eg, imageName)
 				},
 				OutputDirFunc: func(md map[string]string) (string, error) {
+					fmt.Printf("solver called my OutputDirFunc callback with %v from %s\n", md, debug.Stack())
 					if md["export-dir"] != "true" {
 						// Use the other fun for images.
 						return "", nil

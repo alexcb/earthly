@@ -491,6 +491,7 @@ func (c *Converter) SaveArtifactFromLocal(ctx context.Context, saveFrom, saveTo 
 
 // SaveImage applies the earthly SAVE IMAGE command.
 func (c *Converter) SaveImage(ctx context.Context, imageNames []string, pushImages bool, insecurePush bool, cacheHint bool, cacheFrom []string) error {
+	fmt.Printf("call to SaveImage %v %v %v\n", imageNames, pushImages, cacheFrom)
 	for _, cf := range cacheFrom {
 		c.opt.CacheImports[cf] = true
 	}

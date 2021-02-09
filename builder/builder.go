@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"sync"
 
@@ -270,6 +271,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 						refPrefix := fmt.Sprintf("ref/%s", refKey)
 						imageIndex++
 
+						fmt.Printf("for local %q\n", saveImage.DockerTag)
 						platformImgName, err := platformSpecificImageName(saveImage.DockerTag, *sts.Platform)
 						if err != nil {
 							return nil, err
@@ -317,10 +319,12 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 		return res, nil
 	}
 	onImage := func(childCtx context.Context, eg *errgroup.Group, imageName string) (io.WriteCloser, error) {
+		fmt.Printf("OnImage %q was run from %s\nQueuing up loadDockerTar caller", imageName, debug.Stack())
 		sp.printCurrentSuccess()
 		pipeR, pipeW := io.Pipe()
 		eg.Go(func() error {
 			defer pipeR.Close()
+			fmt.Printf("\n\ncalling loadDockerTar for imageName=%q\n\n\n", imageName)
 			err := loadDockerTar(childCtx, pipeR)
 			if err != nil {
 				return errors.Wrapf(err, "load docker tar")
@@ -379,6 +383,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 		}
 	} else if opt.OnlyFinalTargetImages {
 		for _, saveImage := range mts.Final.SaveImages {
+			fmt.Printf("here1 %v\n", saveImage)
 			shouldPush := opt.Push && saveImage.Push && saveImage.DockerTag != ""
 			shouldExport := !opt.NoOutput && saveImage.DockerTag != ""
 			if !shouldPush && !shouldExport {
@@ -402,6 +407,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 			console := b.opt.Console.WithPrefixAndSalt(sts.Target.String(), sts.Salt)
 
 			for _, saveImage := range sts.SaveImages {
+				fmt.Printf("here2 %v\n", saveImage)
 				shouldPush := opt.Push && saveImage.Push && !sts.Target.IsRemote() && saveImage.DockerTag != ""
 				shouldExport := !opt.NoOutput && saveImage.DockerTag != ""
 				if !shouldPush && !shouldExport {
