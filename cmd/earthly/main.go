@@ -1092,7 +1092,8 @@ func (app *earthlyApp) insertZSHCompleteEntry() error {
 }
 
 func (app *earthlyApp) run(ctx context.Context, args []string) int {
-	err := app.cliApp.RunContext(ctx, args)
+	failedOutput := "" // if the builder fails, a copy of the failed output will be saved here
+	err := app.cliApp.RunContext(context.WithValue(ctx, "failed_output", &failedOutput), args)
 
 	rpcRegex := regexp.MustCompile(`(?U)rpc error: code = .+ desc = `)
 	if err != nil {
@@ -1105,6 +1106,11 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 				"Check your git auth settings.\n" +
 					"Did you ssh-add today? Need to configure ~/.earthly/config.yml?\n" +
 					"For more information see https://docs.earthly.dev/guides/auth\n")
+		} else if strings.Contains(failedOutput, "Invalid ELF image for this architecture") {
+			app.console.Warnf("Error: %v\n", err)
+			app.console.Printf(
+				"Are you using --platform to target a different architecture? You may have to manually install QEMU.\n" +
+					"For more information see https://docs.earthly.dev/guides/multi-platform\n")
 		} else if !app.verbose && rpcRegex.MatchString(err.Error()) {
 			baseErr := errors.Cause(err)
 			baseErrMsg := rpcRegex.ReplaceAll([]byte(baseErr.Error()), []byte(""))
@@ -2228,6 +2234,7 @@ func (app *earthlyApp) actionBuild(c *cli.Context) error {
 	}
 	_, err = b.BuildTarget(c.Context, target, buildOpts)
 	if err != nil {
+		fmt.Printf("returning err here\n")
 		return errors.Wrap(err, "build target")
 	}
 	return nil

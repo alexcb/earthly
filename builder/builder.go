@@ -137,6 +137,7 @@ func (sp *successPrinter) incrementIndex() {
 func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt BuildOpt) (*states.MultiTarget, error) {
 	outDir, err := ioutil.TempDir(".", ".tmp-earthly-out")
 	if err != nil {
+		fmt.Printf("returning err here15\n")
 		return nil, errors.Wrap(err, "mk temp dir for artifacts")
 	}
 	defer os.RemoveAll(outDir)
@@ -174,6 +175,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 				EnableAst:            b.opt.EnableAst,
 			})
 			if err != nil {
+				fmt.Printf("returning err here14\n")
 				return nil, err
 			}
 		}
@@ -181,6 +183,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 		if !b.builtMain {
 			ref, err := b.stateToRef(childCtx, gwClient, mts.Final.MainState, mts.Final.Platform)
 			if err != nil {
+				fmt.Printf("returning err here13\n")
 				return nil, err
 			}
 			res.AddRef("main", ref)
@@ -188,6 +191,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 		if !opt.NoOutput && opt.OnlyArtifact != nil && !opt.OnlyFinalTargetImages {
 			ref, err := b.stateToRef(childCtx, gwClient, mts.Final.ArtifactsState, mts.Final.Platform)
 			if err != nil {
+				fmt.Printf("returning err here12\n")
 				return nil, err
 			}
 			refKey := "final-artifact"
@@ -201,6 +205,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 			if (sts.HasDangling && !b.opt.UseFakeDep) || (b.builtMain && sts.RunPush.Initialized) {
 				depRef, err := b.stateToRef(childCtx, gwClient, b.targetPhaseState(sts), sts.Platform)
 				if err != nil {
+					fmt.Printf("returning err here11\n")
 					return nil, err
 				}
 				refKey := fmt.Sprintf("dep-%d", depIndex)
@@ -218,10 +223,12 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 				}
 				ref, err := b.stateToRef(childCtx, gwClient, saveImage.State, sts.Platform)
 				if err != nil {
+					fmt.Printf("returning err here10\n")
 					return nil, err
 				}
 				config, err := json.Marshal(saveImage.Image)
 				if err != nil {
+					fmt.Printf("returning err here9\n")
 					return nil, errors.Wrapf(err, "marshal save image config")
 				}
 
@@ -274,6 +281,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 
 						platformImgName, err := platformSpecificImageName(saveImage.DockerTag, *sts.Platform)
 						if err != nil {
+							fmt.Printf("returning err here8\n")
 							return nil, err
 						}
 						res.AddMeta(fmt.Sprintf("%s/image.name", refPrefix), []byte(platformImgName))
@@ -297,6 +305,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 				for _, saveLocal := range b.targetPhaseArtifacts(sts) {
 					ref, err := b.artifactStateToRef(childCtx, gwClient, sts.SeparateArtifactsState[saveLocal.Index], sts.Platform)
 					if err != nil {
+						fmt.Printf("returning err here7\n")
 						return nil, err
 					}
 					refKey := fmt.Sprintf("dir-%d", dirIndex)
@@ -325,6 +334,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 			defer pipeR.Close()
 			err := loadDockerTar(childCtx, pipeR)
 			if err != nil {
+				fmt.Printf("returning err here6\n")
 				return errors.Wrapf(err, "load docker tar")
 			}
 			return nil
@@ -349,6 +359,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 	}
 	err = b.s.buildMainMulti(ctx, bf, onImage, onArtifact, onFinalArtifact, "main")
 	if err != nil {
+		fmt.Printf("returning err here5\n")
 		return nil, errors.Wrapf(err, "build main")
 	}
 	sp.printCurrentSuccess()
@@ -377,6 +388,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 	} else if opt.OnlyArtifact != nil {
 		err := b.saveArtifactLocally(ctx, *opt.OnlyArtifact, outDir, opt.OnlyArtifactDestPath, mts.Final.Salt, opt, false)
 		if err != nil {
+			fmt.Printf("returning err here4\n")
 			return nil, err
 		}
 	} else if opt.OnlyFinalTargetImages {
@@ -428,6 +440,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 					}
 					err := b.saveArtifactLocally(ctx, artifact, artifactDir, saveLocal.DestPath, sts.Salt, opt, saveLocal.IfExists)
 					if err != nil {
+						fmt.Printf("returning err here3\n")
 						return nil, err
 					}
 					dirIndex++
@@ -443,6 +456,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 							}
 							err := b.saveArtifactLocally(ctx, artifact, artifactDir, saveLocal.DestPath, sts.Salt, opt, saveLocal.IfExists)
 							if err != nil {
+								fmt.Printf("returning err here2\n")
 								return nil, err
 							}
 							dirIndex++
@@ -459,6 +473,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 	for parentImageName, children := range manifestLists {
 		err = loadDockerManifest(ctx, b.opt.Console, parentImageName, children)
 		if err != nil {
+			fmt.Printf("returning err here1\n")
 			return nil, err
 		}
 	}

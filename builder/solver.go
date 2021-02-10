@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -24,15 +25,41 @@ type onImageFunc func(context.Context, *errgroup.Group, string) (io.WriteCloser,
 type onArtifactFunc func(context.Context, int, domain.Artifact, string, string) (string, error)
 type onFinalArtifactFunc func(context.Context) (string, error)
 
+// SolverError contains an error and log
+type SolverError struct {
+	err                 error
+	vertexFailureOutput string
+}
+
+// NewSolverError creates a new solver error with the additional output log of the command that failed
+func NewSolverError(err error, log string) error {
+	if log == "" {
+		return err
+	}
+	return &SolverError{
+		err:                 err,
+		vertexFailureOutput: log,
+	}
+}
+
+// Error returns the error
+func (se *SolverError) Error() string {
+	if se == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("%d::%s", len(se.vertexFailureOutput), err.Error())
+}
+
 type solver struct {
-	sm              *solverMonitor
-	bkClient        *client.Client
-	attachables     []session.Attachable
-	enttlmnts       []entitlements.Entitlement
-	cacheImports    map[string]bool
-	cacheExport     string
-	maxCacheExport  string
-	saveInlineCache bool
+	sm                 *solverMonitor
+	bkClient           *client.Client
+	attachables        []session.Attachable
+	enttlmnts          []entitlements.Entitlement
+	cacheImports       map[string]bool
+	cacheExport        string
+	maxCacheExport     string
+	saveInlineCache    bool
+	failedVertexOutput string
 }
 
 func (s *solver) solveDockerTar(ctx context.Context, state llb.State, platform specs.Platform, img *image.Image, dockerTag string, outFile string) error {
@@ -58,7 +85,8 @@ func (s *solver) solveDockerTar(ctx context.Context, state llb.State, platform s
 		return nil
 	})
 	eg.Go(func() error {
-		return s.sm.monitorProgress(ctx, ch, "")
+		log, err := s.sm.monitorProgress(ctx, ch, "")
+		return NewSolverError(err, log)
 	})
 	eg.Go(func() error {
 		file, err := os.Create(outFile)
@@ -116,7 +144,10 @@ func (s *solver) buildMainMulti(ctx context.Context, bf gwclient.BuildFunc, onIm
 		return nil
 	})
 	eg.Go(func() error {
-		return s.sm.monitorProgress(ctx, ch, phaseText)
+		var err error
+		log, err := s.sm.monitorProgress(ctx, ch, phaseText)
+		return NewSolverError(err, log)
+
 	})
 	err = eg.Wait()
 	if err != nil {
@@ -147,7 +178,8 @@ func (s *solver) solveMain(ctx context.Context, state llb.State, platform specs.
 		return nil
 	})
 	eg.Go(func() error {
-		return s.sm.monitorProgress(ctx, ch, "")
+		log, err := s.sm.monitorProgress(ctx, ch, "")
+		return NewSolverError(err, log)
 	})
 	err = eg.Wait()
 	if err != nil {
