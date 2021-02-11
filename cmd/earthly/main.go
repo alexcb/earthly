@@ -1102,6 +1102,7 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		if errors.As(err, &solverErr) {
 			failedOutput = solverErr.VertexLog()
 		}
+		fmt.Printf("failedOutput: %q\n", failedOutput)
 
 		if strings.Contains(err.Error(), "security.insecure is not allowed") {
 			app.console.Warnf("Error: --allow-privileged (-P) flag is required\n")

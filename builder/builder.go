@@ -700,7 +700,7 @@ func (se *SolverError) Error() string {
 	if se == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("err-is-%d::%s----------", len(se.log), se.err.Error())
+	return se.err.Error()
 }
 
 func (se *SolverError) Unwrap() error {
