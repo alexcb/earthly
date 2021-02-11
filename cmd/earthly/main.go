@@ -1100,7 +1100,7 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		var failedOutput string
 		var solverErr builder.SolverError
 		if errors.As(err, &solverErr) {
-			failedOutput = solverErr.failedOutput
+			failedOutput = solverErr.VertexLog()
 		}
 
 		if strings.Contains(err.Error(), "security.insecure is not allowed") {
