@@ -86,6 +86,7 @@ func (s *solver) solveDockerTar(ctx context.Context, state llb.State, platform s
 	})
 	eg.Go(func() error {
 		log, err := s.sm.monitorProgress(ctx, ch, "")
+		fmt.Printf("returning newSolveOptMulti err here3 for %v %v\n", len(log), err)
 		return NewSolverError(err, log)
 	})
 	eg.Go(func() error {
@@ -146,6 +147,7 @@ func (s *solver) buildMainMulti(ctx context.Context, bf gwclient.BuildFunc, onIm
 	eg.Go(func() error {
 		var err error
 		log, err := s.sm.monitorProgress(ctx, ch, phaseText)
+		fmt.Printf("returning newSolveOptMulti err here for %v %v\n", len(log), err)
 		return NewSolverError(err, log)
 
 	})
@@ -179,6 +181,7 @@ func (s *solver) solveMain(ctx context.Context, state llb.State, platform specs.
 	})
 	eg.Go(func() error {
 		log, err := s.sm.monitorProgress(ctx, ch, "")
+		fmt.Printf("returning newSolveOptMulti err here2 for %v %v\n", len(log), err)
 		return NewSolverError(err, log)
 	})
 	err = eg.Wait()
