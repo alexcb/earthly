@@ -1100,20 +1100,10 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		ie, isInterpereterError := earthfile2llb.GetInterpreterError(err)
 
 		var failedOutput string
-		var solverErr os.PathError
-		fmt.Printf("type: %T %T\n", solverErr, &solverErr)
-
-		val := reflect.ValueOf(&solverErr)
-		typ := val.Type()
-
-		var errorType = reflect.TypeOf((*error)(nil)).Elem()
-		if e := typ.Elem(); !e.Implements(errorType) {
-			panic("wtf?")
+		var solverErr *builder.SolverError
+		if errors.As(err, &solverErr) {
+			failedOutput = solverErr.VertexLog()
 		}
-
-		//if errors.As(err, &solverErr) {
-		//	failedOutput = solverErr.VertexLog()
-		//}
 
 		if strings.Contains(err.Error(), "security.insecure is not allowed") {
 			app.console.Warnf("Error: --allow-privileged (-P) flag is required\n")
