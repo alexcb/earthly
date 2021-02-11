@@ -36,6 +36,7 @@ func NewSolverError(err error, log string) error {
 	if log == "" {
 		return err
 	}
+	fmt.Printf("returning SOlverError type\n")
 	return &SolverError{
 		err:                 err,
 		vertexFailureOutput: log,
