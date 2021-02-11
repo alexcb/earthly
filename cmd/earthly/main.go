@@ -26,7 +26,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"internal/reflectlite"
+	"reflect"
 
 	"github.com/earthly/earthly/analytics"
 	"github.com/earthly/earthly/ast"
@@ -1103,10 +1103,10 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		var solverErr builder.SolverError
 		fmt.Printf("type: %T %T\n", solverErr, &solverErr)
 
-		val := reflectlite.ValueOf(&solverErr)
+		val := reflect.ValueOf(&solverErr)
 		typ := val.Type()
 
-		var errorType = reflectlite.TypeOf((*error)(nil)).Elem()
+		var errorType = reflect.TypeOf((*error)(nil)).Elem()
 		if e := typ.Elem(); !e.Implements(errorType) {
 			panic("wtf?")
 		}
