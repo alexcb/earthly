@@ -26,6 +26,8 @@ import (
 	"text/tabwriter"
 	"time"
 
+	"internal/reflectlite"
+
 	"github.com/earthly/earthly/analytics"
 	"github.com/earthly/earthly/ast"
 	"github.com/earthly/earthly/autocomplete"
@@ -1100,6 +1102,14 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		var failedOutput string
 		var solverErr builder.SolverError
 		fmt.Printf("type: %T %T\n", solverErr, &solverErr)
+
+		val := reflectlite.ValueOf(&solverErr)
+		typ := val.Type()
+
+		if e := typ.Elem(); e.Kind() != reflectlite.Interface && !e.Implements(errorType) {
+			panic("errors: *target must be interface or implement error")
+		}
+
 		if errors.As(err, &solverErr) {
 			failedOutput = solverErr.VertexLog()
 		}
