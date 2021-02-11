@@ -36,7 +36,7 @@ func NewSolverError(err error, log string) error {
 	if log == "" {
 		return err
 	}
-	fmt.Printf("returning SOlverError type\n")
+	fmt.Printf("returning SOlverError type with %d-char log\n", len(log))
 	return &SolverError{
 		err:                 err,
 		vertexFailureOutput: log,
@@ -48,7 +48,7 @@ func (se *SolverError) Error() string {
 	if se == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("%d::%s", len(se.vertexFailureOutput), se.err.Error())
+	return fmt.Sprintf("err-is-%d::%s----------", len(se.vertexFailureOutput), se.err.Error())
 }
 
 type solver struct {
