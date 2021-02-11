@@ -26,8 +26,6 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"reflect"
-
 	"github.com/earthly/earthly/analytics"
 	"github.com/earthly/earthly/ast"
 	"github.com/earthly/earthly/autocomplete"
