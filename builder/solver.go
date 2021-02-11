@@ -47,7 +47,7 @@ func (se *SolverError) Error() string {
 	if se == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("%d::%s", len(se.vertexFailureOutput), err.Error())
+	return fmt.Sprintf("%d::%s", len(se.vertexFailureOutput), se.err.Error())
 }
 
 type solver struct {
