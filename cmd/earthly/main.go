@@ -1093,6 +1093,7 @@ func (app *earthlyApp) insertZSHCompleteEntry() error {
 
 func (app *earthlyApp) run(ctx context.Context, args []string) int {
 	rpcRegex := regexp.MustCompile(`(?U)rpc error: code = .+ desc = `)
+	err := app.cliApp.RunContext(ctx, args)
 	if err != nil {
 		ie, isInterpereterError := earthfile2llb.GetInterpreterError(err)
 
