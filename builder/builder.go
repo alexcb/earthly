@@ -703,6 +703,10 @@ func (se *SolverError) Error() string {
 	return fmt.Sprintf("err-is-%d::%s----------", len(se.log), se.err.Error())
 }
 
+func (se *SolverError) Unwrap() error {
+	return se.err
+}
+
 // VertexLog returns vertex log that caused the failure
 func (se *SolverError) VertexLog() string {
 	return se.log
