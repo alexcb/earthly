@@ -703,6 +703,7 @@ func (se *SolverError) Error() string {
 	return se.err.Error()
 }
 
+// Unwrap returns the wrapped error
 func (se *SolverError) Unwrap() error {
 	return se.err
 }
