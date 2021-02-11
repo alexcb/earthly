@@ -1098,8 +1098,7 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		ie, isInterpereterError := earthfile2llb.GetInterpreterError(err)
 
 		var failedOutput string
-		if errors.Is(err, builder.SolverError) {
-			sErr := errors.As(err, builder.SolverError)
+		if sErr := errors.As(err, builder.SolverError); sErr != nil {
 			failedOutput = sErr.failedOutput
 		}
 
