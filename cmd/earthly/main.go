@@ -1092,12 +1092,16 @@ func (app *earthlyApp) insertZSHCompleteEntry() error {
 }
 
 func (app *earthlyApp) run(ctx context.Context, args []string) int {
-	failedOutput := "" // if the builder fails, a copy of the failed output will be saved here
-	err := app.cliApp.RunContext(context.WithValue(ctx, "failed_output", &failedOutput), args)
-
 	rpcRegex := regexp.MustCompile(`(?U)rpc error: code = .+ desc = `)
 	if err != nil {
 		ie, isInterpereterError := earthfile2llb.GetInterpreterError(err)
+
+		var failedOutput string
+		if errors.Is(err, builder.SolverError) {
+			sErr := errors.As(err, builder.SolverError)
+			failedOutput = sErr.failedOutput
+		}
+
 		if strings.Contains(err.Error(), "security.insecure is not allowed") {
 			app.console.Warnf("Error: --allow-privileged (-P) flag is required\n")
 		} else if strings.Contains(err.Error(), "failed to fetch remote") {
