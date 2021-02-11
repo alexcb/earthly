@@ -1098,8 +1098,9 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		ie, isInterpereterError := earthfile2llb.GetInterpreterError(err)
 
 		var failedOutput string
-		if sErr := errors.As(err, builder.SolverError); sErr != nil {
-			failedOutput = sErr.failedOutput
+		var solverErr builder.SolverError
+		if errors.As(err, &solverErr) {
+			failedOutput = solverErr.failedOutput
 		}
 
 		if strings.Contains(err.Error(), "security.insecure is not allowed") {

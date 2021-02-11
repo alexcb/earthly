@@ -679,8 +679,8 @@ func (b *Builder) saveArtifactLocally(ctx context.Context, artifact domain.Artif
 
 // SolverError contains an error and log
 type SolverError struct {
-	err                 error
-	vertexFailureOutput string
+	err error
+	log string
 }
 
 // NewSolverError creates a new solver error with the additional output log of the command that failed
@@ -690,8 +690,8 @@ func NewSolverError(err error, log string) error {
 	}
 	fmt.Printf("returning SOlverError type with %d-char log\n", len(log))
 	return &SolverError{
-		err:                 err,
-		vertexFailureOutput: log,
+		err: err,
+		log: log,
 	}
 }
 
@@ -700,5 +700,10 @@ func (se *SolverError) Error() string {
 	if se == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("err-is-%d::%s----------", len(se.vertexFailureOutput), se.err.Error())
+	return fmt.Sprintf("err-is-%d::%s----------", len(se.log), se.err.Error())
+}
+
+// VertexLog returns vertex log that caused the failure
+func (se *SolverError) VertexLog() string {
+	return se.log
 }
