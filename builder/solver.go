@@ -153,6 +153,7 @@ func (s *solver) buildMainMulti(ctx context.Context, bf gwclient.BuildFunc, onIm
 	})
 	err = eg.Wait()
 	if err != nil {
+		fmt.Printf("bubbling up %T: %v\n", err, err)
 		return err
 	}
 	return nil
