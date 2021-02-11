@@ -1106,8 +1106,9 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 		val := reflectlite.ValueOf(&solverErr)
 		typ := val.Type()
 
-		if e := typ.Elem(); e.Kind() != reflectlite.Interface && !e.Implements(errorType) {
-			panic("errors: *target must be interface or implement error")
+		var errorType = reflectlite.TypeOf((*error)(nil)).Elem()
+		if e := typ.Elem(); !e.Implements(errorType) {
+			panic("wtf?")
 		}
 
 		if errors.As(err, &solverErr) {
