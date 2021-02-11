@@ -360,7 +360,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 	err = b.s.buildMainMulti(ctx, bf, onImage, onArtifact, onFinalArtifact, "main")
 	if err != nil {
 		fmt.Printf("returning err here5\n")
-		return nil, errors.Wrapf(err, "build main")
+		return nil, errors.Wrapf(NewSolverError(err, b.s.vertexFailureOutput), "build main")
 	}
 	sp.printCurrentSuccess()
 	sp.incrementIndex()
@@ -377,7 +377,7 @@ func (b *Builder) convertAndBuild(ctx context.Context, target domain.Target, opt
 		if hasRunPush {
 			err = b.s.buildMainMulti(ctx, bf, onImage, onArtifact, onFinalArtifact, "--push")
 			if err != nil {
-				return nil, errors.Wrapf(err, "build push")
+				return nil, errors.Wrapf(NewSolverError(err, b.s.vertexFailureOutput), "build push")
 			}
 		}
 		sp.printCurrentSuccess()
@@ -675,4 +675,30 @@ func (b *Builder) saveArtifactLocally(ctx context.Context, artifact domain.Artif
 		}
 	}
 	return nil
+}
+
+// SolverError contains an error and log
+type SolverError struct {
+	err                 error
+	vertexFailureOutput string
+}
+
+// NewSolverError creates a new solver error with the additional output log of the command that failed
+func NewSolverError(err error, log string) error {
+	if log == "" {
+		return err
+	}
+	fmt.Printf("returning SOlverError type with %d-char log\n", len(log))
+	return &SolverError{
+		err:                 err,
+		vertexFailureOutput: log,
+	}
+}
+
+// Error returns the error
+func (se *SolverError) Error() string {
+	if se == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("err-is-%d::%s----------", len(se.vertexFailureOutput), se.err.Error())
 }

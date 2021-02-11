@@ -25,42 +25,16 @@ type onImageFunc func(context.Context, *errgroup.Group, string) (io.WriteCloser,
 type onArtifactFunc func(context.Context, int, domain.Artifact, string, string) (string, error)
 type onFinalArtifactFunc func(context.Context) (string, error)
 
-// SolverError contains an error and log
-type SolverError struct {
-	err                 error
-	vertexFailureOutput string
-}
-
-// NewSolverError creates a new solver error with the additional output log of the command that failed
-func NewSolverError(err error, log string) error {
-	if log == "" {
-		return err
-	}
-	fmt.Printf("returning SOlverError type with %d-char log\n", len(log))
-	return &SolverError{
-		err:                 err,
-		vertexFailureOutput: log,
-	}
-}
-
-// Error returns the error
-func (se *SolverError) Error() string {
-	if se == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("err-is-%d::%s----------", len(se.vertexFailureOutput), se.err.Error())
-}
-
 type solver struct {
-	sm                 *solverMonitor
-	bkClient           *client.Client
-	attachables        []session.Attachable
-	enttlmnts          []entitlements.Entitlement
-	cacheImports       map[string]bool
-	cacheExport        string
-	maxCacheExport     string
-	saveInlineCache    bool
-	failedVertexOutput string
+	sm                  *solverMonitor
+	bkClient            *client.Client
+	attachables         []session.Attachable
+	enttlmnts           []entitlements.Entitlement
+	cacheImports        map[string]bool
+	cacheExport         string
+	maxCacheExport      string
+	saveInlineCache     bool
+	vertexFailureOutput string
 }
 
 func (s *solver) solveDockerTar(ctx context.Context, state llb.State, platform specs.Platform, img *image.Image, dockerTag string, outFile string) error {
@@ -86,9 +60,9 @@ func (s *solver) solveDockerTar(ctx context.Context, state llb.State, platform s
 		return nil
 	})
 	eg.Go(func() error {
-		log, err := s.sm.monitorProgress(ctx, ch, "")
-		fmt.Printf("returning newSolveOptMulti err here3 for %v %v\n", len(log), err)
-		return NewSolverError(err, log)
+		var err error
+		s.vertexFailureOutput, err = s.sm.monitorProgress(ctx, ch, "")
+		return err
 	})
 	eg.Go(func() error {
 		file, err := os.Create(outFile)
@@ -147,10 +121,8 @@ func (s *solver) buildMainMulti(ctx context.Context, bf gwclient.BuildFunc, onIm
 	})
 	eg.Go(func() error {
 		var err error
-		log, err := s.sm.monitorProgress(ctx, ch, phaseText)
-		fmt.Printf("returning newSolveOptMulti err here for %v %v\n", len(log), err)
-		return NewSolverError(err, log)
-
+		s.vertexFailureOutput, err = s.sm.monitorProgress(ctx, ch, phaseText)
+		return err
 	})
 	err = eg.Wait()
 	if err != nil {
@@ -182,9 +154,9 @@ func (s *solver) solveMain(ctx context.Context, state llb.State, platform specs.
 		return nil
 	})
 	eg.Go(func() error {
-		log, err := s.sm.monitorProgress(ctx, ch, "")
-		fmt.Printf("returning newSolveOptMulti err here2 for %v %v\n", len(log), err)
-		return NewSolverError(err, log)
+		var err error
+		s.vertexFailureOutput, err = s.sm.monitorProgress(ctx, ch, "")
+		return err
 	})
 	err = eg.Wait()
 	if err != nil {
