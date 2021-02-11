@@ -1099,6 +1099,7 @@ func (app *earthlyApp) run(ctx context.Context, args []string) int {
 
 		var failedOutput string
 		var solverErr builder.SolverError
+		fmt.Printf("type: %T %T\n", solverErr, &solverErr)
 		if errors.As(err, &solverErr) {
 			failedOutput = solverErr.VertexLog()
 		}
