@@ -29,39 +29,43 @@ rm -rf "$HOME/.earthly/"
 echo "=== Test 2: Implied Bootstrap ==="
 
 "$earthly" +test
-
-if [[ ! -d "$HOME/.earthly" ]]; then
-  echo ".earthly directory was missing after bootstrap"
-  exit 1
+if [[ -z "$EARTHLY_INSTALL_ID" ]]; then
+  if [[ ! -d "$HOME/.earthly" ]]; then
+    echo ".earthly directory was missing after bootstrap"
+    exit 1
+  fi
+else
+  echo "skipping (directory is only created when install ID is missing"
 fi
 
 echo "----"
-"$earthly" +test | tee imp_boot_output
 
+"$earthly" +test | tee imp_boot_output
 if  cat imp_boot_output | grep -q "bootstrap |"; then
     echo "build did extra bootstrap"
     exit 1
 fi
-
 rm -rf "$HOME/.earthly/"
 
 echo "=== Test 3: CI ==="
 
 "$earthly" --ci +test
-
-if [[ ! -d "$HOME/.earthly" ]]; then
-  echo ".earthly directory was missing after bootstrap"
-  exit 1
+if [[ -z "$EARTHLY_INSTALL_ID" ]]; then
+  if [[ ! -d "$HOME/.earthly" ]]; then
+    echo ".earthly directory was missing after bootstrap"
+    exit 1
+  fi
+else
+  echo "skipping (directory is only created when install ID is missing"
 fi
 
 echo "----"
-"$earthly" --ci +test | tee ci_boot_output
 
+"$earthly" --ci +test | tee ci_boot_output
 if  cat ci_boot_output | grep -q "bootstrap |"; then
     echo "build did extra bootstrap"
     exit 1
 fi
-
 rm -rf "$HOME/.earthly/"
 
 echo "=== Test 4: With Autocomplete ==="
