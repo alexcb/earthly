@@ -112,6 +112,8 @@ func IsBootstrapped() bool {
 // EnsurePermissions changes the permissions of all earthly files to be owned by the user and their group.
 func EnsurePermissions() error {
 	earthlyDir, sudoUser := getEarthlyDirAndUser()
-	fileutil.EnsureUserOwned(earthlyDir, sudoUser)
+	if sudoUser != nil {
+		fileutil.EnsureUserOwned(earthlyDir, sudoUser)
+	}
 	return nil
 }
