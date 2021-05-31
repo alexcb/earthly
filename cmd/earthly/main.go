@@ -1552,7 +1552,12 @@ func (app *earthlyApp) actionBootstrap(c *cli.Context) error {
 func (app *earthlyApp) bootstrap(c *cli.Context) error {
 	var err error
 	console := app.console.WithPrefix("bootstrap")
-	defer cliutil.EnsurePermissions()
+	defer func() {
+		// cliutil.IsBootstrapped() determines if bootstrapping was done based
+		// on the existance of ~/.earthly; therefore we must ensure it's created.
+		cliutil.GetOrCreateEarthlyDir()
+		cliutil.EnsurePermissions()
+	}()
 
 	if app.bootstrapWithAutocomplete {
 		// Because this requires sudo, it should warn and not fail the rest of it.
