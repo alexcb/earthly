@@ -129,12 +129,15 @@ func RepoHashFromCloneURL(repo string) string {
 }
 
 func getInstallID() (string, error) {
+	fmt.Printf("call to getInstallID\n")
 	earthlyDir, err := cliutil.GetOrCreateEarthlyDir()
 	if err != nil {
+		fmt.Printf("call to getInstallID failed %v\n", err)
 		return "", err
 	}
 
 	path := filepath.Join(earthlyDir, "install_id")
+	fmt.Printf("path is %v\n", path)
 	if !fileutil.FileExists(path) {
 		u, err := uuid.NewUUID()
 		if err != nil {
