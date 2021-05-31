@@ -1209,7 +1209,7 @@ func (app *earthlyApp) autoComplete() {
 	err := app.autoCompleteImp()
 	if err != nil {
 		errToLog := err
-		logDir, err := cliutil.GetEarthlyDir()
+		logDir, err := cliutil.GetOrCreateEarthlyDir()
 		if err != nil {
 			os.Exit(1)
 		}
@@ -1574,7 +1574,7 @@ func (app *earthlyApp) actionBootstrap(c *cli.Context) error {
 
 	if !app.bootstrapNoBuildkit {
 		if app.cfg.Global.BuildkitScheme == "tcp" && app.cfg.Global.TLSEnabled {
-			root, err := cliutil.GetEarthlyDir()
+			root, err := cliutil.GetOrCreateEarthlyDir()
 			if err != nil {
 				return err
 			}
@@ -2809,12 +2809,7 @@ func processSecrets(secrets, secretFiles []string, dotEnvMap map[string]string) 
 }
 
 func defaultConfigPath() string {
-	earthlyDir, err := cliutil.GetEarthlyDir()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error getting earthly dir: %v\n", err.Error())
-		return ""
-	}
-
+	earthlyDir := cliutil.GetEarthlyDir()
 	oldConfig := filepath.Join(earthlyDir, "config.yaml")
 	newConfig := filepath.Join(earthlyDir, "config.yml")
 	if fileutil.FileExists(oldConfig) && !fileutil.FileExists(newConfig) {
