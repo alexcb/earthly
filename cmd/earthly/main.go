@@ -1012,7 +1012,7 @@ func (app *earthlyApp) before(context *cli.Context) error {
 
 	if !isBootstrapCmd && !cliutil.IsBootstrapped() {
 		app.bootstrapNoBuildkit = true // Docker may not be available, for instance... like our integration tests.
-		err = app.actionBootstrap(context)
+		err = app.bootstrap(context)
 		if err != nil {
 			return errors.Wrap(err, "bootstrap unbootstrapped installation")
 		}
@@ -1523,7 +1523,6 @@ func symlinkEarthlyToEarth() error {
 func (app *earthlyApp) actionBootstrap(c *cli.Context) error {
 	app.commandName = "bootstrap"
 
-	var err error
 	switch app.homebrewSource {
 	case "bash":
 		compEntry, err := bashCompleteEntry()
@@ -1547,6 +1546,11 @@ func (app *earthlyApp) actionBootstrap(c *cli.Context) error {
 		return errors.Errorf("unhandled source %q", app.homebrewSource)
 	}
 
+	return app.bootstrap(c)
+}
+
+func (app *earthlyApp) bootstrap(c *cli.Context) error {
+	var err error
 	console := app.console.WithPrefix("bootstrap")
 	defer cliutil.EnsurePermissions()
 
