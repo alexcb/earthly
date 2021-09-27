@@ -6,10 +6,27 @@ RUN apk add --update --no-cache \
 all:
     LOCALLY
     ARG RELEASE_TAG
-    ARG GITHUB_USER=alexcb
+    ARG GITHUB_USER=earthly
+    ARG DOCKERHUB_USER=earthly
     ARG EARTHLY_REPO=earthly
-    ARG BREW_REPO=homebrew-earthly-1
-    RUN test -n "$RELEASE_TAG"
+    ARG BREW_REPO=homebrew-earthly
+    RUN test -n "$RELEASE_TAG" || (echo "ERROR: RELEASE_TAG is not set" && exit 1)
+
+    # validate args: if doing a prod-release make sure no args are changed
+    # otherwise if a test release is detected, make sure all users are changed
+    # (this is to prevent a case where only the github user is changed, but dockerhub is not, and the dockerhub binary is accidentally overwritten)
+    RUN set -e; \
+        test -n "$RELEASE_TAG" || (echo "ERROR: RELEASE_TAG is not set" && exit 1); \
+        (echo "$RELEASE_TAG" | grep '^v[0-9]\+.[0-9]\+.[0-9]\+$' > /dev/null) || (echo "ERROR: RELEASE_TAG must be formatted as v1.2.3; instead got \"$RELEASE_TAG\""; exit 1); \
+        if [ "$GITHUB_USER" = "earthly" ] && [ "$DOCKERHUB_USER" = "earthly" ]; then \
+          test "$BREW_REPO" = "homebrew-earthly" || (echo "ERROR: prod release detected; expecting BREW_REPO=earthly, but got $BREW_REPO" && exit 1); \
+          test "$EARTHLY_REPO" = "earthly" || (echo "ERROR: prod release detected; expecting EARTHLY_REPO=earthly, but got $EARTHLY_REPO" && exit 1); \
+          test "$EARTHLY_GIT_BRANCH" = "main" || (echo "ERROR: performing release on non-main branch" && exit 1); \
+        else \
+          test "$GITHUB_USER" != "earthly" || (echo "ERROR: non-prod release detected but got GITHUB_USER=$GITHUB_USER" && exit 1); \
+          test "$DOCKERHUB_USER" != "earthly" || (echo "ERROR: non-prod release detected but got DOCKERHUB_USER=$DOCKERHUB_USER" && exit 1); \
+        fi; \
+        echo "performing release to repo=$GITHUB_USER/$EARTHLY_REPO; homebrew=$GITHUB_USER/$BREW_REPO; dockerhub=$DOCKERHUB_USER"
 
     # terrible unsafe hack to determine --push flag
     IF ps auxw | grep -v grep | grep earthly | grep -e --push
@@ -27,13 +44,15 @@ all:
           exit 1; \
         fi;
 
-	# THIS IS WORKING NOW
+    #RUN ../earthly $PUSH --build-arg DOCKERHUB_USER="$DOCKERHUB_USER" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-dockerhub
     RUN ../earthly $PUSH --build-arg GITHUB_USER="$GITHUB_USER" --build-arg EARTHLY_REPO="$EARTHLY_REPO" --build-arg BREW_REPO="$BREW_REPO" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-github
-    RUN ../earthly $PUSH --build-arg GITHUB_USER="$GITHUB_USER" --build-arg EARTHLY_REPO="$EARTHLY_REPO" --build-arg BREW_REPO="$BREW_REPO" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-homebrew
+    #RUN ../earthly $PUSH --build-arg GITHUB_USER="$GITHUB_USER" --build-arg EARTHLY_REPO="$EARTHLY_REPO" --build-arg BREW_REPO="$BREW_REPO" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-homebrew
 
-    #RUN ../earthly --build-arg GITHUB_USER="$GITHUB_USER" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-dockerhub
-    #RUN ../earthly --build-arg GITHUB_USER="$GITHUB_USER" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-homebrew
+    # TODO pass along a RELEASE_REPO_TEST_SUFFIX which would cause us to host our yum/apt repos under https://test-pkg.earthly.dev/$RELEASE_REPO_TEST_SUFFIX/...
+    # and when it is empty, we would use https://pkg.earthly.dev/...
     #RUN ../earthly --build-arg GITHUB_USER="$GITHUB_USER" --build-arg RELEASE_TAG="$RELEASE_TAG" +release-repo
+    # until then, we will just print this out:
+    RUN echo "TODO: the apt/yum release must be triggered seperately; once we get https://test-pkg.earthly.dev/ setup"
 
 release:
     ARG RELEASE_TAG
@@ -43,15 +62,18 @@ release:
 
 release-dockerhub:
     ARG RELEASE_TAG
+    ARG DOCKERHUB_USER="earthly"
     RUN test -n "$RELEASE_TAG"
     BUILD \
         --build-arg DIND_ALPINE_TAG=alpine \
         --build-arg DIND_UBUNTU_TAG=ubuntu \
+        --build-arg DOCKERHUB_USER="$DOCKERHUB_USER" \
         ../+all-dind
     BUILD \
         --platform=linux/amd64 \
         --platform=linux/arm64 \
         --build-arg DIND_ALPINE_TAG=latest \
+        --build-arg DOCKERHUB_USER="$DOCKERHUB_USER" \
         ../+dind-alpine
     BUILD --build-arg TAG="$RELEASE_TAG" ../+earthly-docker
     BUILD \
@@ -59,6 +81,7 @@ release-dockerhub:
         --platform=linux/arm/v7 \
         --platform=linux/arm64 \
         --build-arg TAG="$RELEASE_TAG" \
+        --build-arg DOCKERHUB_USER="$DOCKERHUB_USER" \
         ../buildkitd+buildkitd
     BUILD --build-arg TAG=latest ../+earthly-docker
     BUILD \
@@ -66,6 +89,7 @@ release-dockerhub:
         --platform=linux/arm/v7 \
         --platform=linux/arm64 \
         --build-arg TAG=latest \
+        --build-arg DOCKERHUB_USER="$DOCKERHUB_USER" \
         ../buildkitd+buildkitd
 
 release-github:
@@ -77,9 +101,11 @@ release-github:
     ARG RELEASE_TAG
     ARG GITHUB_USER="earthly"
     ARG EARTHLY_REPO="earthly"
+    ARG DOCKERHUB_USER="earthly"
     ARG EARTHLY_GIT_HASH
     RUN test -n "$RELEASE_TAG" && test -n "$EARTHLY_GIT_HASH"
     COPY --build-arg VERSION=$RELEASE_TAG \
+         --build-arg DEFAULT_BUILDKITD_IMAGE="$DOCKERHUB_USER/buildkitd:$VERSION" \
         ../+earthly-all/* ./release/
     RUN ls ./release
     RUN test -f ./release/earthly-linux-amd64 && \
@@ -115,10 +141,19 @@ release-github:
         # next make sure any previous tag is deleted (otherwise github will create an untagged release name vX.Y.Z)
         curl -H "Authorization: token $GITHUB_TOKEN" --request DELETE "https://api.github.com/repos/$GITHUB_USER/$EARTHLY_REPO/git/refs/tags/$RELEASE_TAG"; \
         # next, upload binaries
+        echo github-release upload \
+        --owner "$GITHUB_USER" \
+        --repo "$EARTHLY_REPO" \
+        --prerelease false \
+        --commitish "$EARTHLY_GIT_HASH" \
+        --tag "$RELEASE_TAG" \
+        --name "$RELEASE_TAG" \
+        --body "$BODY" \
+        ./release/* && \
         github-release upload \
         --owner "$GITHUB_USER" \
         --repo "$EARTHLY_REPO" \
-        --prerelease true \
+        --prerelease false \
         --commitish "$EARTHLY_GIT_HASH" \
         --tag "$RELEASE_TAG" \
         --name "$RELEASE_TAG" \

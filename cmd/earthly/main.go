@@ -172,6 +172,12 @@ func profhandler() {
 }
 
 func main() {
+	_, dump := os.LookupEnv("dump")
+	if dump {
+		fmt.Printf("%v; %v; %v\n", DefaultBuildkitdImage, Version, GitSha)
+		return
+	}
+
 	startTime := time.Now()
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
