@@ -345,3 +345,6 @@ Overall, compared to Bazel, Earthly sacrifices some correctness and reproducibil
 <h2 align="center">Licensing</h2>
 
 Earthly is licensed under the Business Source License 1.1. See [licenses/BSL](./licenses/BSL) and the [Earthly BSL FAQ page](https://earthly.dev/bslfaq) for more information.
+
+
+this be a change.
