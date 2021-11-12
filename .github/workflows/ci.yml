@@ -46,10 +46,13 @@ jobs:
 
       - name: Execute remote-cache test 1 (Earthly Only)
         run: |-
+            set -e
             echo hello
             docker ps -a
             echo hi
-            docker rm -f earthly-buildkitd || true
+            set +e
+            docker rm -f earthly-buildkitd
+            set -e
             echo continue
           ./tests/remote-cache/test.sh \
               --build-arg DOCKERHUB_AUTH=true \
