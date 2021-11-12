@@ -222,7 +222,9 @@ github.com/containerd/nri v0.0.0-20201007170849-eb1350a75164/go.mod h1:+2wGSDGFY
 github.com/containerd/nri v0.0.0-20210316161719-dbaa18c31c14/go.mod h1:lmxnXF6oMkbqs39FiCt1s0R2HSMhcLel9vNL3m4AaeY=
 github.com/containerd/nri v0.1.0/go.mod h1:lmxnXF6oMkbqs39FiCt1s0R2HSMhcLel9vNL3m4AaeY=
 github.com/containerd/stargz-snapshotter v0.8.1-0.20210910092506-a3ecdc9366fb/go.mod h1:VWbnkZwoaOVh9W1n+dQ9xxXNgTA14SrDNVhq269Odp8=
-github.com/containerd/stargz-snapshotter/estargz v0.0.0-20201217071531-2b97b583765b/go.mod h1:E9uVkkBKf0EaC39j2JVW9EzdNhYvpz6eQIjILHebruk=
+github.com/containerd/stargz-snapshotter/estargz v0.4.1/go.mod h1:x7Q9dg9QYb4+ELgxmo4gBUeJB0tl5dqH1Sdz0nJU1QM=
+github.com/containerd/stargz-snapshotter/estargz v0.8.0/go.mod h1:mwIwuwb+D8FX2t45Trwi0hmWmZm5VW7zPP/rekwhWQU=
+github.com/containerd/stargz-snapshotter/estargz v0.8.1-0.20210910092506-a3ecdc9366fb/go.mod h1:ndCBLrMyXFyfgBEPHgdR0Ywe8O/kuTShyUsKOzIVeyw=
 github.com/containerd/ttrpc v0.0.0-20190828154514-0e0f228740de/go.mod h1:PvCDdDGpgqzQIzDW1TphrGLssLDZp2GuS+X5DkEJB8o=
 github.com/containerd/ttrpc v0.0.0-20190828172938-92c8520ef9f8/go.mod h1:PvCDdDGpgqzQIzDW1TphrGLssLDZp2GuS+X5DkEJB8o=
 github.com/containerd/ttrpc v0.0.0-20191028202541-4f1b8fe65a5c/go.mod h1:LPm1u0xBw8r8NOKoOdNMeVHSawSsltak+Ihv+etqsE8=
@@ -315,8 +317,8 @@ github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815/go.mod h1:WwZ+bS3
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
-github.com/earthly/buildkit v0.0.1-0.20211029211110-d8349d68bca7 h1:MV6U5dYY4L10BJSyPeJQKpcUQUW2Sqhh6BIF9XhMqn4=
-github.com/earthly/buildkit v0.0.1-0.20211029211110-d8349d68bca7/go.mod h1:xVzArlNtSY2T0lx781v4QKjeGEI+StJYWdJHKd/vlmw=
+github.com/earthly/buildkit v0.0.1-0.20211110195712-902721127522 h1:ZiNj+5jeeQlY7Zw8egTdJEM49+ouHy4EXnh1XJKYM+s=
+github.com/earthly/buildkit v0.0.1-0.20211110195712-902721127522/go.mod h1:xVzArlNtSY2T0lx781v4QKjeGEI+StJYWdJHKd/vlmw=
 github.com/earthly/fsutil v0.0.0-20211029185157-9f87c4e70cf0 h1:AnKSLuPyEB7ZLDhapjkypj+eJohCBvTKdcCYLxvLcPA=
 github.com/earthly/fsutil v0.0.0-20211029185157-9f87c4e70cf0/go.mod h1:E6osHKls9ix67jofYQ61RQKwlJhqJOZM2hintp+49iI=
 github.com/elazarl/goproxy v0.0.0-20180725130230-947c36da3153/go.mod h1:/Zj4wYkgs4iZTTu3o/KG3Itv/qCCa8VVMlb3i9OVuzc=
