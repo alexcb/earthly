@@ -2,7 +2,7 @@ name: Docker CI Ubuntu
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, gha-testing ]
     paths-ignore:
       - 'docs/**'
       - '**.md'
