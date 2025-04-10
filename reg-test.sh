@@ -17,7 +17,7 @@ test -n "$registryip"
 cat>>"$configpath"<<EOF
   buildkit_additional_config: |
     [registry."docker.io"]
-      mirrors = ["$registryip:5000"]
+      mirrors = ["http://$registryip:5000"]
       http = true
       insecure = true
 EOF
