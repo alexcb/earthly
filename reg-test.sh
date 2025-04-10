@@ -11,10 +11,13 @@ global:
   disable_analytics: true
 EOF
 
+registryip="$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' registry)"
+test -n "$registryip"
+
 cat>>"$configpath"<<EOF
   buildkit_additional_config: |
     [registry."docker.io"]
-      mirrors = ["registry:5000"]
+      mirrors = ["$registryip:5000"]
       http = true
       insecure = true
 EOF
