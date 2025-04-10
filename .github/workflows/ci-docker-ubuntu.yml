@@ -35,7 +35,7 @@ jobs:
       - name: +for-linux
         run: earthly +lint #for-linux
       - name: cgrouppppp
-        run: ufw default deny outgoing
+        run: sudo ufw default deny outgoing
       - name: again
         run: echo hello && earthly +lint #for-linux
       - name: Buildkit logs (runs on failure)
