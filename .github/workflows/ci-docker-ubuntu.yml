@@ -23,6 +23,8 @@ jobs:
     env:
       FORCE_COLOR: 1
       DO_NOT_TRACK: 1
+      # Used in the earthly/actions-setup github action
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: earthly/actions-setup@main
       - uses: actions/checkout@v4
