@@ -32,10 +32,10 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: cgroup stuff
         run: test -f /sys/fs/cgroup/cgroup.controllers
-      - name: +for-linux
-        run: earthly +lint #for-linux
+      #- name: +for-linux
+      #  run: earthly +lint #for-linux
       - name: cgrouppppp
-        run: sudo ufw default deny outgoing
+        run: sudo ufw default deny outgoing && sudo ufw enable
       - name: again
         run: echo hello && earthly +lint #for-linux
       - name: Buildkit logs (runs on failure)
