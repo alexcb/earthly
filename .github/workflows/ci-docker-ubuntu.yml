@@ -17,9 +17,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tutorial:
-    needs: build-earthly
-    name: Tutorial
+  build:
+    name: build
     runs-on: ubuntu-latest
     env:
       FORCE_COLOR: 1
