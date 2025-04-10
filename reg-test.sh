@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-sudo find / | grep earthly | grep config
-
 configpath="$HOME/.earthly/config.yml"
 
 mkdir -p "$(dirname "$configpath")"

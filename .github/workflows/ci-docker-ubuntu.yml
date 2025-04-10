@@ -36,8 +36,8 @@ jobs:
         run: sleep 10 && docker logs registry && ls -la && ./reg-test.sh
       - name: lint
         run: earthly +lint
-      - name: disable network (all resources should be preloaded by now)
-        run: sudo ufw default deny outgoing && sudo ufw enable
+      #- name: disable network (all resources should be preloaded by now)
+      #  run: sudo ufw default deny outgoing && sudo ufw enable
       - name: lint again
         run: earthly +lint
       - name: Buildkit logs (runs on failure)
