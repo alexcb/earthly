@@ -23,3 +23,4 @@ cat>>"$configpath"<<EOF
 EOF
 
 echo mirror setup complete
+cat "$configpath"
