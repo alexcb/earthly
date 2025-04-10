@@ -28,8 +28,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: cgroup stuff
+        run: test -f /sys/fs/cgroup/cgroup.controllers
       - name: +for-linux
-        run: earthly +for-linux
+        run: earthly +lint #for-linux
+      - name: cgrouppppp
+        run: find /sys/fs/cgroup/ -name cgroup.controllers
       - name: Buildkit logs (runs on failure)
         run: docker logs earthly-buildkitd
         if: ${{ failure() }}
