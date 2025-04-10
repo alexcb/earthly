@@ -30,8 +30,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: lint
+      - name: bootstrap
         run: earthly bootstrap
+      - name: start registry
+        run: docker run -d -p 5000:5000 --name registry registry:3.0
+      - name: warm the registry
+        run: sleep 10 && docker logs registry
       - name: disable network (all resources should be preloaded by now)
         run: sudo ufw default deny outgoing && sudo ufw enable
       - name: lint
