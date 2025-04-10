@@ -35,7 +35,7 @@ jobs:
       - name: start registry
         run: docker run -d -p 5000:5000 --name registry registry:3.0
       - name: warm the registry
-        run: sleep 10 && docker logs registry
+        run: sleep 10 && docker logs registry && ls -la && ./reg-test.sh
       - name: disable network (all resources should be preloaded by now)
         run: sudo ufw default deny outgoing && sudo ufw enable
       - name: lint
