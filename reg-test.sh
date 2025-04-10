@@ -3,7 +3,7 @@ set -e
 
 sudo find / | grep earthly | grep config
 
-configpath="/etc/.earthly/config.yml"
+configpath="$HOME/.earthly/config.yml"
 
 mkdir -p "$(dirname "$configpath")"
 cat>"$configpath"<<EOF
